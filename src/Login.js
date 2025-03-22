@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from './AuthContext';
 
-const Login = ({ onLogin }) => {
+const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError(''); // Clear previous errors
-        if (!username || !password){
-            setError("Please enter a username and password");
+        setError('');
+        if (!username || !password) {
+            setError('Please enter a username and password');
             return;
         }
 
@@ -23,18 +25,16 @@ const Login = ({ onLogin }) => {
             });
             console.log('Login successful:', response.data);
 
-            // Handle successful login (e.g., save token, redirect)
             const token = response.data.token;
             localStorage.setItem('token', token);
-            onLogin(); // Update authentication state
-            navigate('/dashboard'); // Redirect to dashboard
+            login();
+            navigate('/dashboard');
         } catch (err) {
-            if (err.response && err.response.status === 401){
-                setError("Invalid Username or Password");
+            if (err.response && err.response.status === 401) {
+                setError('Invalid Username or Password');
             } else {
-                setError("An unexpected error has occurred");
+                setError('An unexpected error has occurred');
             }
-
         }
     };
 
